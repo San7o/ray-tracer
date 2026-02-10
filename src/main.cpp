@@ -9,8 +9,21 @@
 #include "ray.hpp"
 #include "color.hpp"
 
+bool hit_sphere(const point3& center, double radius, const ray& r)
+{
+  vec3 oc = center - r.origin();
+  auto a = dot(r.direction(), r.direction());
+  auto b = -2.0 * dot(r.direction(), oc);
+  auto c = dot(oc, oc) - radius * radius;
+  auto discriminant = b*b - 4*a*c;
+  return (discriminant >= 0);
+}
+
 color ray_color(const ray& r)
 {
+  if (hit_sphere(point3(0, 0, -1), 0.5, r))
+    return color(1, 0, 0);
+  
   // Blend white and blue depending on the height of y (after
   // normalization)
   vec3 unit_direction = unit_vector(r.direction());
