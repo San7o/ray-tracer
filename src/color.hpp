@@ -9,6 +9,7 @@
 
 #include <iostream>
 
+// Colors should have values between 0 and 1
 using color = vec3;
 
 void write_color(std::ostream& out, const color& pixel_color)
