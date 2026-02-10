@@ -10,7 +10,7 @@ public:
   ray(const point3& origin, const vec3& direction)
     : orig(origin), dir(direction) {}
 
-  const point3& origin() const { return this->orig; }
+  const point3& origin() const  { return this->orig; }
   const vec3& direction() const { return this->dir; }
 
   point3 at(double t) const
