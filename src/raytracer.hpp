@@ -14,3 +14,4 @@
 #include "hittable_list.hpp"
 #include "sphere.hpp"
 #include "camera.hpp"
+#include "interval.hpp"
