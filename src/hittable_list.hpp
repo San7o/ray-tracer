@@ -25,6 +25,8 @@ public:
   void add(std::shared_ptr<hittable> object)
   { this->objects.push_back(object); }
 
+  // Returns true and fils [rec] with the latest hit information if
+  // any of the object were hit
   bool hit(const ray& r, interval ray_t, hit_record& rec) const override
   {
     hit_record temp_rec;

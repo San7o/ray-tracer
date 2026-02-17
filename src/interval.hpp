@@ -7,6 +7,7 @@
 
 #include "utils.hpp"
 
+// This is used to bound the ray extent
 class interval
 {
 public:

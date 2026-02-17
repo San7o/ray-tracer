@@ -11,6 +11,8 @@ public:
 
   virtual ~material() = default;
 
+  // A material defines how does a ray scatter when it hits ab object,
+  // and which color it picks up
   virtual bool scatter([[maybe_unused]] const ray& r_in,
                        [[maybe_unused]] const hit_record& rec,
                        [[maybe_unused]] color& attenuation,
@@ -54,7 +56,8 @@ public:
 
 private:
 
-  color albedo;
+  color albedo;  // the base color of the object, this is the color
+                 // that will be reflected
 };
 
 class metal : public material
@@ -75,10 +78,18 @@ public:
   }
 
 private:
-  color  albedo;
-  double fuzz;
+  
+  color  albedo; // the base color of the object, this is the color
+                 // that will be reflected
+  double fuzz;   // fuzz scatters the reflection in a random direction
+                 // to make the color more blurry
 };
 
+// Clear materials such as water, glass and diamond are dielectrics.
+// When a light ray hits them, it splits into a reflected ray and a
+// refracted (transmitted) ray. The reflected ray bounces off the
+// surface, while the refracted ray goes in the surface and gets
+// bent according to the refractive index (Snell's law)
 class dielectric : public material
 {
 public:
@@ -109,6 +120,7 @@ public:
   }
 
 private:
+  
   // Refractive index in vacuum on air, or the ration of the materia's
   // refractive index over the refractive index of the enclosing media
   double refraction_index;

@@ -13,6 +13,9 @@
 // Colors should have values between 0 and 1
 using color = vec3;
 
+// Converts a color for linear space to gamma space
+// we do this because most image viewers expect the colors to
+// be in gamma space
 inline double linear_to_gamma(double linear_component)
 {
   if (linear_component > 0)
@@ -21,6 +24,7 @@ inline double linear_to_gamma(double linear_component)
   return 0;
 }
 
+// Output a single color to [out] in gamma space RGB
 void write_color(std::ostream& out, const color& pixel_color)
 {
   auto r = pixel_color.x();

@@ -11,19 +11,20 @@
 class camera {
 public:
 
-  double aspect_ratio  = 1.0;
-  int    image_width   = 100;
+  double aspect_ratio      = 1.0;
+  int    image_width       = 100;
   int    samples_per_pixel = 10;  // count of random samples of each pixel
-  int    max_depth     = 10;      // maximum number of ray bonces into scene
+  int    max_depth         = 10;  // maximum number of ray bonces into scene
 
-  double vfov = 90; // vertical view angle (field of view)
-  point3 lookfrom = point3(0, 0, 0); // Point camera is looking from
-  point3 lookat = point3(0, 0, -1);  // Point camera is looking at
-  vec3 vup = vec3(0, 1, 0);          // Camera-relative up direction
+  double vfov     = 90;                // vertical view angle (field of view)
+  point3 lookfrom = point3(0, 0, 0);   // Point camera is looking from
+  point3 lookat   = point3(0, 0, -1);  // Point camera is looking at
+  vec3 vup        = vec3(0, 1, 0);     // Camera-relative up direction
 
-  double defocus_angle = 0; // Variation angle of rays through each pixel
+  double defocus_angle = 0;  // Variation angle of rays through each pixel
   double focus_dist    = 10; // Distance from camera lookfrom point to plane of perfect focus
-  
+
+  // Render to PBM format, writes to standard output
   void render(const hittable& world)
   {
     initialize();
@@ -54,16 +55,28 @@ private:
 
   int    image_height;
   point3 center;
-  point3 pixel00_loc;   // location of pixel 00
-  vec3   pixel_delta_u; // offset to pixel to the right
-  vec3   pixel_delta_v; // offset to pixel below
+  point3 pixel00_loc;      // location of pixel 00
+  vec3   pixel_delta_u;    // offset to pixel to the right
+  vec3   pixel_delta_v;    // offset to pixel below
   double pixel_samples_scale;  // color scale factor for a sum of pixel samples
-  vec3 u, v, w;        // Camera frame basis vectors
-  vec3 defocus_disk_u; // Defocus disk horizontal radius
-  vec3 defocus_disk_v; // Defocus disk vertical radius
+  vec3   u, v, w;          // Camera frame basis vectors
+  vec3   defocus_disk_u;   // Defocus disk horizontal radius
+  vec3   defocus_disk_v;   // Defocus disk vertical radius
   
   void initialize()
   {
+    //
+    // Camera
+    // ------
+    //
+    // The camera is a point in space where the rays are coming from.
+    // It is often referred to as the "eye"
+    //
+    // The x coordinate is positive to the right
+    // The y coordinate is positive up
+    // The z coordinate is negative from the camera to the viewport
+    //
+    
     int image_height   = image_width / aspect_ratio;
     this->image_height = (image_height < 1) ? 1 : image_height;
     this->pixel_samples_scale = 1.0 / this->samples_per_pixel;
@@ -82,25 +95,13 @@ private:
     auto h = std::tan(theta / 2);
     auto viewport_height = 2 * h * focus_dist;
     auto viewport_width  = viewport_height * (double(image_width) / image_height);
-
+    
     // Calculate the u, v, w unit basis vectors for the camera
     // coordinate frame
     w = unit_vector(lookfrom - lookat);
     u = unit_vector(cross(vup, w));
     v = cross(w, u);
     
-    //
-    // Camera
-    // ------
-    //
-    // The camera is a point in space where the rays are coming from.
-    // It is often referred to as the "eye"
-    //
-    // The x coordinate is positive to the right
-    // The y coordinate is positive up
-    // The z coordinate is negative from the camera to the viewport
-    //
-
     // Calculate the vectors acress the horizontal and down the vertical
     // viewport edges
     // v = vertical, u = horizontal
@@ -139,16 +140,16 @@ private:
     return ray(ray_origin, ray_direction);
   }
 
+  // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5]
+  // unit square
   vec3 sample_square() const
   {
-    // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5]
-    // unit square
     return vec3(random_double() - 0.5, random_double() - 0.5, 0);
   }
 
+  // Returns a random point in the camera defocus disk
   point3 defocus_disk_sample() const
   {
-    // Returns a random point in the camera defocus disk
     auto p = random_in_unit_disk();
     return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
   }
