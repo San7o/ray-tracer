@@ -6,6 +6,7 @@
 #pragma once
 
 #include "hittable.hpp"
+#include "material.hpp"
 
 class camera {
 public:
@@ -135,21 +136,11 @@ private:
     if (world.hit(r, interval(0.001, infinity), rec))
       // we use 0.001 to account for floating point inaccuracies
     {
-      // Pick a direction according to lambertian distribution
-      //
-      // This distribution scatters reflected rays in a manner that is
-      // proportional to cos(phi), where phi is the angle between the
-      // reflected ray and the surface normal. This means that a
-      // reflected ray is most likely to scatter in a direction near
-      // the surface normal, and less likely to scatter in directions
-      // away from the normal.
-      // We do this by generating a sphere tangent to the hit point
-      // and randmly selecting a point on its surface for the
-      // direction
-      vec3 direction = rec.normal + random_unit_vector();
-
-      double reflectance = 0.7;
-      return reflectance * ray_color(ray(rec.p, direction), depth-1, world);
+      ray scattered;
+      color attenuation;
+      if (rec.mat->scatter(r, rec, attenuation, scattered))
+        return attenuation * ray_color(scattered, depth-1, world);
+      return color(0, 0, 0);
     }
 
     // Blend white and blue depending on the height of y (after
